@@ -4,6 +4,7 @@ import os
 import pandas as pd
 from dataclasses import dataclass, field
 from typing import List
+import numpy as np 
 
 @dataclass
 class Melody:
@@ -40,6 +41,35 @@ class Melody:
             "total_note_durations_sec": total_note_durations_sec,
             "transposition": transposition,
         }
+
+@dataclass
+class DiatonicMode:
+  name: str
+  midi: [int]
+  home_midi: int
+  def __init__(self, name: str, midi: [int], home_midi: int):
+    self.name = name
+    self.midi = np.sort(midi % 12)
+    self.home_midi = home_midi
+
+def diatonic_modes():
+    lydian     = np.array([0,2,4,6,7,9,11])
+    locrian    = -lydian
+    ionian     = lydian + np.array([0,0,0,-1,0,0,0])
+    phrygian   = -ionian
+    mixolydian = ionian + np.array([0,0,0,0,0,0,-1])
+    aeolian    = -mixolydian
+    dorian     = mixolydian + np.array([0,0,-1,0,0,0,0])
+    
+    return {
+      'lydian':     DiatonicMode('lydian',     lydian,     65),
+      'locrian':    DiatonicMode('locrian',    locrian,    59),
+      'ionian':     DiatonicMode('ionian',     ionian,     60),
+      'phrygian':   DiatonicMode('phrygian',   phrygian,   64),
+      'mixolydian': DiatonicMode('mixolydian', mixolydian, 55),
+      'aeolian':    DiatonicMode('aeolian',    aeolian,    57),
+      'dorian':     DiatonicMode('dorian',     dorian,     62)
+    }
 
 
 def load_melodies(path):
